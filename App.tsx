@@ -1,28 +1,31 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import { StyleSheet, Image, View } from 'react-native'
+import Header from './components/Header'
+import Form from './components/Form'
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
-
+export default function App() {
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <NewAppScreen templateFileName="App.tsx" />
-    </View>
-  );
+    <>
+      <Header />
+
+      <Image
+        style={styles.image}
+        source={require('./assets/img/cryptocurrencies.png')}
+      />
+
+      <View style={styles.content}>
+        <Form />
+      </View>
+    </>
+  )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  image: {
+    width: '100%',
+    height: 150,
+    marginHorizontal: '2.5%'
   },
-});
-
-export default App;
+  content: {
+    marginHorizontal: '2.5%'
+  }
+})
