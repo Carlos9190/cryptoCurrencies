@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 import axios from 'axios'
-import { FormCurrencies } from '../types'
+import { CryptoCurrency, FormCurrencies } from '../types'
 
-export default function Form() {
+type FormProps = {
+    currency: FormCurrencies['currency']
+    setCurrency: React.Dispatch<React.SetStateAction<string>>
+    cryptoCurrency: FormCurrencies['cryptocurrency']
+    setCryptoCurrency: React.Dispatch<React.SetStateAction<string>>
+    setCallAPI: React.Dispatch<React.SetStateAction<boolean>>
+}
 
-    const [currency, setCurrency] = useState('')
-    const [cryptoCurrency, setCryptoCurrency] = useState('')
-    const [cryptoCurrencies, setCryptoCurrencies] = useState('')
+export default function Form({ currency, setCurrency, cryptoCurrency, setCryptoCurrency, setCallAPI }: FormProps) {
+
+    const [cryptoCurrencies, setCryptoCurrencies] = useState<CryptoCurrency[]>([])
 
     useEffect(() => {
         const API = async () => {
@@ -24,10 +30,23 @@ export default function Form() {
         setCurrency(currency)
     }
 
+    const getCryptoCurrency = (cryptoCurrency: FormCurrencies['cryptocurrency']) => {
+        setCryptoCurrency(cryptoCurrency)
+    }
+
+    const requestQuote = () => {
+        if (!currency || !cryptoCurrency) {
+            return Alert.alert('Error', 'Both fields are required')
+        }
+
+        setCallAPI(true)
+    }
+
     return (
         <View>
             <Text style={styles.label}>Currency</Text>
             <Picker
+                itemStyle={{ height: 120 }}
                 selectedValue={currency}
                 onValueChange={currency => getCurrency(currency)}
             >
@@ -39,7 +58,23 @@ export default function Form() {
             </Picker>
 
             <Text style={styles.label}>Cryptocurrency</Text>
+            <Picker
+                itemStyle={{ height: 120 }}
+                selectedValue={cryptoCurrency}
+                onValueChange={cryptoCurrency => getCryptoCurrency(cryptoCurrency)}
+            >
+                <Picker.Item label='-- Select --' value='' />
+                {cryptoCurrencies.map(crypto => (
+                    <Picker.Item key={crypto.CoinInfo.Id} label={crypto.CoinInfo.FullName} value={crypto.CoinInfo.Name} />
+                ))}
+            </Picker>
 
+            <Pressable
+                style={styles.btnQuote}
+                onPress={() => requestQuote()}
+            >
+                <Text style={styles.btnQuoteText}>Quote</Text>
+            </Pressable>
         </View>
     )
 }
@@ -50,5 +85,18 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         fontSize: 22,
         marginVertical: 20
+    },
+    btnQuote: {
+        backgroundColor: '#5E49E2',
+        padding: 10,
+        marginTop: 20,
+        borderRadius: 5
+    },
+    btnQuoteText: {
+        textAlign: 'center',
+        color: '#FFF',
+        fontSize: 18,
+        fontFamily: 'Lato-Black',
+        textTransform: 'uppercase'
     }
 })
